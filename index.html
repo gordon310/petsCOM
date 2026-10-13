@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="社区宠物到家需求确认问卷。可在线填写、保存本机草稿并导出答复。">
+<title>填写问卷 · 社区宠物到家</title>
+<link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+<header class="hero"><div class="wrap"><div class="eyebrow">两社区试点 · 需求确认 V0.2</div><h1>把服务需求，一起确认清楚。</h1><p>选择你的身份，填写相关问题。负责人再按前置关系逐轮讨论 Grill-me 追问。</p><div class="hero-note">填写 → 导出答复 → 回传给项目负责人</div></div></header>
+<main class="wrap">
+<section class="intro" aria-label="填写说明"><strong>你的填写会自动保存到当前浏览器。</strong><p>完成后点击「导出答复」，把文件通过微信、邮件或约定渠道发给项目负责人。页面不会自动提交，也不会把答案上传到公开仓库。请勿填写门锁密码、身份证、详细住宅地址或病历。</p><p class="small">换浏览器、换设备或清除浏览数据后，草稿不会同步。离开前建议导出一份备份。</p></section>
+<p id="status" role="status" aria-live="polite">正在加载问卷…</p>
+<form id="survey" hidden>
+<section class="identity" aria-labelledby="identity-title"><h2 id="identity-title">先选择你的身份</h2><div class="identity-grid">
+<label>称呼或姓名<input id="respondent" name="respondent" autocomplete="name" placeholder="方便负责人核对答复"></label>
+<label>参与身份<select id="role" name="role"><option value="">请选择</option><option value="A">项目负责人 / 综合体运营方</option><option value="B">社区合作方</option><option value="C">目标居民</option><option value="D">拟聘接待 / 上门人员</option></select></label>
+<label>所属社区或单位<input id="organization" name="organization" placeholder="社区 A / 社区 B / 总部 / 其他"></label>
+</div><p class="small">身份选择会定位到相关调查。所有分组均可查看；不适用的问题可以跳过。</p></section>
+<nav id="sections" class="tabs" aria-label="问卷分组"></nav>
+<div class="progress"><span id="progress-text"></span><progress id="progress" max="82" value="0" aria-label="已填写问题数"></progress></div>
+<div id="panels"></div>
+<section class="finish"><h2>填写完毕，回传答复</h2><p>可导出部分答复；未回答的题会明确列为「未回答」。选项之外的金额、日期、负责人和理由，请填入各题补充栏。</p><button type="button" id="download" class="primary">导出答复文件</button><button type="button" id="copy" class="secondary">复制答复文字</button><p id="export-status" role="status" aria-live="polite"></p><textarea id="copy-fallback" aria-label="答复文字，可全选复制" hidden readonly></textarea></section>
+</form>
+<noscript><p class="error">此填写页面需要启用 JavaScript。你仍可打开下方需求文档，按题号回复。</p></noscript>
+<footer><a href="https://github.com/gordon310/petsCOM" target="_blank" rel="noopener">查看需求文档及参考原型 ↗</a><p>需求讨论稿 · 推荐方案须由负责人确认，填写问卷不代表批准正式研发。</p></footer>
+</main>
+<div class="action-bar" id="action-bar" hidden><div class="wrap"><span id="save-state">本机草稿</span><button type="button" id="download-sticky" class="primary">导出答复</button></div></div>
+</body></html>

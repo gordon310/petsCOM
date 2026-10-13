@@ -4,7 +4,7 @@ import json
 import re
 
 root = Path(__file__).resolve().parents[1]
-source = root / 'doc/04_社区宠物到家_需求确认问卷_Grill-me_V0.2.md'
+source = root / 'doc/05_社区宠物到家_平台运营方需求确认问卷_Grill-me_V0.3.md'
 text = source.read_text()
 questions = []
 
@@ -28,7 +28,7 @@ for match in re.finditer(r'❓ \*\*(G\d{2}) (.*?)\*\*\s*\n(.*?)(?=\n❓ \*\*G|\n
         prompt = prompt[depmatch.end():].strip()
     questions.append(dict(id=qid, section='G', title=title, prompt=clean(prompt), recommended=clean(recommended), challenge=clean(challenge), impact=clean(impact), required=clean(required), dependencies=sorted(deps), options=['是，接受推荐', '修改推荐', '待讨论'], single=True))
 
-for match in re.finditer(r'\*\*([ABCD]\d{2})(★?) (.*?)\*\*\s*\n(.*?)(?=\n\*\*[ABCD]\d{2}|\n## |\Z)', text, re.S):
+for match in re.finditer(r'\*\*([A]\d{2})(★?) (.*?)\*\*\s*\n(.*?)(?=\n\*\*[A]\d{2}|\n## |\Z)', text, re.S):
     qid, star, title, body = match.groups()
     options, prompts = [], []
     for line in body.splitlines():
@@ -36,18 +36,26 @@ for match in re.finditer(r'\*\*([ABCD]\d{2})(★?) (.*?)\*\*\s*\n(.*?)(?=\n\*\*[
             options.append(line[6:].strip())
         elif line.strip() and line.strip() != '---' and not line.startswith('回收完成后'):
             prompts.append(line.removeprefix('- ').strip())
-    questions.append(dict(id=qid, section=qid[0], title=title, prompt=clean('\n'.join(prompts)), options=options, single='单选' in title or '最多' in title or (qid.startswith('C') and qid in ['C02','C05','C08','C11','C12']) or (qid.startswith('D') and qid in ['D01','D04','D05','D07','D08']), required=bool(star)))
+    questions.append(dict(id=qid, section=qid[0], title=title, prompt=clean('\n'.join(prompts)), options=options, single='单选' in title or '最多' in title, required=bool(star)))
     # "最多选" questions allow several selections; their limit is handled in the UI.
     if '最多' in title:
         questions[-1]['single'] = False
     limit = re.search(r'最多选\s*(\d+)\s*项', title)
     questions[-1]['maxChoices'] = int(limit.group(1)) if limit else None
 
-assert len(questions) == 82, len(questions)
-assert len({q['id'] for q in questions}) == 82
-assert {q['id'] for q in questions} == {f'{s}{i:02}' for s, count in [('G',30),('A',23),('B',9),('C',12),('D',8)] for i in range(1,count+1)}
+assert len(questions) == 54, len(questions)
+assert len({q['id'] for q in questions}) == 54
+assert {q['id'] for q in questions} == {f'{s}{i:02}' for s, count in [('G',30),('A',24)] for i in range(1,count+1)}
 for q in questions:
     assert q['title'] and isinstance(q['options'],list)
     assert q['id'] not in q.get('dependencies',[])
-(root / 'questionnaire.json').write_text(json.dumps(dict(version='0.2', questions=questions), ensure_ascii=False, indent=2) + '\n')
-print('Generated 82 questions: 30 Grill-me + 52 basic questions.')
+assert {q['section'] for q in questions} == {'A', 'G'}
+settled = set()
+remaining = {q['id']: set(q.get('dependencies', [])) for q in questions if q['section'] == 'G'}
+while remaining:
+    frontier = {qid for qid, deps in remaining.items() if deps <= settled}
+    assert frontier, 'Decision dependencies contain a cycle or an unknown question'
+    settled.update(frontier)
+    remaining = {qid: deps for qid, deps in remaining.items() if qid not in frontier}
+(root / 'questionnaire.json').write_text(json.dumps(dict(version='0.3', questions=questions), ensure_ascii=False, indent=2) + '\n')
+print('Generated 54 questions: 30 Grill-me + 24 operator questions.')

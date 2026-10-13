@@ -1,12 +1,12 @@
 {
-  "version": "0.2",
+  "version": "0.3",
   "questions": [
     {
       "id": "G01",
       "section": "G",
       "title": "谁有权冻结需求及裁决分歧",
       "prompt": "是否由一名明确的业务负责人最终确认范围，并分别指定社区合作、运营和产品验收负责人？若社区、综合体和产品人员意见不同，由谁在何时裁决？",
-      "recommended": "采用 A23 的负责人体系，并明确唯一业务裁决人及各方确认权限。",
+      "recommended": "以 A24 确认的平台经营关系为基础，采用 A23 的平台负责人体系；列明平台与综合体、社区的职责，并明确业务裁决人及各方确认权限。",
       "challenge": "社区要求开放钥匙保管、运营不同意时，谁可以拒绝？负责人无法出席，谁获授权代决？",
       "impact": "没有决策人，不能冻结有分歧的需求。",
       "required": "姓名/角色、授权范围、决策响应期限。",
@@ -26,7 +26,7 @@
       "recommended": "两社区分别回收最近一次真实照护经历、替代方式、实际支出和具体预约意愿，区分“感兴趣”和“愿按明确价格购买”。",
       "challenge": "如果社区积极支持、居民只愿免费体验，你还会投入吗？什么结果会推翻“社区站一定能带来订单”的假设？",
       "impact": "只有意向时，先做需求验证，开发投入需单独决策。",
-      "required": "每社区样本计划、样本来源、验证期限及支持/否定需求的判据。",
+      "required": "平台方已掌握的真实需求材料；缺失时给出每社区验证计划、负责人、期限及支持/否定需求的判据。",
       "dependencies": [],
       "options": [
         "是，接受推荐",
@@ -280,7 +280,7 @@
       "title": "是否同时验证订单毛利与站点盈亏",
       "prompt": "是否在确定价格前核算单笔贡献和两站固定成本？",
       "recommended": "按 PRD §9 的单笔公式测算，并另算站点固定成本；收入、变动成本与固定工资避免重复计算。补贴、转介收入分别呈现。",
-      "challenge": "一天只有 3 单，接待工资如何覆盖？订单贡献为正但全站亏损时你如何解释？哪个收费会让 C10 的用户放弃？",
+      "challenge": "一天只有 3 单，接待工资如何覆盖？订单贡献为正但全站亏损时你如何解释？平台方已有价格调查是否能支持这个收费？没有调查时，如何验证居民是否购买？",
       "impact": "决定最低可行价格、加价项、优惠权限及持续运营条件。",
       "required": "币种、服务报价、成本口径、盈亏平衡订单量及低需求情境。",
       "dependencies": [
@@ -712,6 +712,22 @@
       "single": true
     },
     {
+      "id": "A24",
+      "section": "A",
+      "title": "平台运营主体与宠物综合体的经营关系是什么？（单选）",
+      "prompt": "请填写平台公司/主体名称；分别列明谁签客户合同、谁收款、谁提供上门服务、谁承接专业服务、谁承担客服/赔付和数据管理责任；协议现状及有权确认人：____。",
+      "options": [
+        "平台与综合体为同一经营主体",
+        "独立平台，综合体为专业服务履约合作方",
+        "多方共同运营，职责以合作协议确定",
+        "其他：____",
+        "待讨论"
+      ],
+      "single": true,
+      "required": true,
+      "maxChoices": null
+    },
+    {
       "id": "A01",
       "section": "A",
       "title": "试点所在地是什么？（单选）",
@@ -1089,451 +1105,10 @@
       "id": "A23",
       "section": "A",
       "title": "项目负责人和决策方式？（填写）",
-      "prompt": "业务最终决策人：________\n社区合作接口人：________\n综合体运营接口人：________\n技术/产品验收人：________",
+      "prompt": "平台方业务最终决策人：________\n社区合作接口人：________\n综合体/专业服务合作接口人：________\n平台方产品业务验收人：________",
       "options": [],
       "single": false,
       "required": true,
-      "maxChoices": null
-    },
-    {
-      "id": "B01",
-      "section": "B",
-      "title": "已提供的场地是什么类型？（单选）",
-      "prompt": "",
-      "options": [
-        "物业/社区服务中心一角",
-        "独立临街门店",
-        "社区活动室或空置用房",
-        "其他：________"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B02",
-      "section": "B",
-      "title": "可使用时长与场地基础条件？",
-      "prompt": "场地面积：约 ________ 平方米；每周可使用天数：________",
-      "options": [
-        "有电源",
-        "有网络",
-        "有空调",
-        "有洗手/给排水",
-        "允许安装标识"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B03",
-      "section": "B",
-      "title": "免费使用安排是否已获得有权主体书面确认？",
-      "prompt": "",
-      "options": [
-        "已签协议（期限：________）",
-        "口头同意",
-        "在审批中",
-        "尚未确定"
-      ],
-      "single": false,
-      "required": true,
-      "maxChoices": null
-    },
-    {
-      "id": "B04",
-      "section": "B",
-      "title": "社区能提供哪种推广支持？（多选）",
-      "prompt": "",
-      "options": [
-        "居民群/公众号发布",
-        "宣传栏/海报/活动",
-        "物业管家推荐",
-        "社区活动日宣传",
-        "无法承诺"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B05",
-      "section": "B",
-      "title": "再就业人选和条件？（多选）",
-      "prompt": "",
-      "options": [
-        "可推荐接待人员",
-        "可推荐宠物上门服务候选人",
-        "可提供职业培训支持",
-        "可提供就业补贴信息",
-        "暂不明确"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B06",
-      "section": "B",
-      "title": "站点是否允许出现宠物实物？（单选）",
-      "prompt": "",
-      "options": [
-        "仅人员咨询，不接收宠物",
-        "允许短时间接送交接",
-        "允许短时照看",
-        "需物业/街道进一步审批"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B07",
-      "section": "B",
-      "title": "现场人力安排？（单选）",
-      "prompt": "",
-      "options": [
-        "1 人值守",
-        "2 人轮班",
-        "与现有服务台共享值守",
-        "暂未确定"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B08",
-      "section": "B",
-      "title": "提供场地之外的费用/责任如何分担？",
-      "prompt": "电费：________；网络：________；装修设备：________；清洁安保：________；事故责任：________",
-      "options": [],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "B09",
-      "section": "B",
-      "title": "合作数据边界？",
-      "prompt": "",
-      "options": [
-        "只需要本站订单数、服务满意度和岗位数量汇总",
-        "需要匿名统计报表",
-        "想了解具名住户数据（须单独评估合法性和必要性）",
-        "待谈"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C01",
-      "section": "C",
-      "title": "家里养什么宠物？",
-      "prompt": "",
-      "options": [
-        "猫",
-        "狗",
-        "猫和狗",
-        "其他",
-        "目前没养"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C02",
-      "section": "C",
-      "title": "过去一年遇到外出无法照顾宠物的次数？",
-      "prompt": "",
-      "options": [
-        "0 次",
-        "1～2 次",
-        "3～5 次",
-        "6 次及以上"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C03",
-      "section": "C",
-      "title": "最想要的服务？（最多选 3 项）",
-      "prompt": "",
-      "options": [
-        "喂猫/换水/铲屎",
-        "遛狗",
-        "洗护接送",
-        "寄养接送",
-        "临时看护",
-        "医院接送",
-        "其他：________"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": 3
-    },
-    {
-      "id": "C04",
-      "section": "C",
-      "title": "使用频率更接近？",
-      "prompt": "",
-      "options": [
-        "每周固定",
-        "每月数次",
-        "出差旅行",
-        "春节/国庆等节假日",
-        "很少使用"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C05",
-      "section": "C",
-      "title": "预约偏好？",
-      "prompt": "",
-      "options": [
-        "提前 1～3 天",
-        "提前一周",
-        "当天急约",
-        "固定周期自动预约"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C06",
-      "section": "C",
-      "title": "选择服务最看重什么？（最多选 3 项）",
-      "prompt": "",
-      "options": [
-        "宠物专业能力",
-        "身份和背景核验",
-        "有实体服务站",
-        "有诊所保障",
-        "过程照片/视频",
-        "服务价格",
-        "可退款/保险"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": 3
-    },
-    {
-      "id": "C07",
-      "section": "C",
-      "title": "愿意采用的入户方式？",
-      "prompt": "",
-      "options": [
-        "本人开门",
-        "家人/物业协助",
-        "授权一次性密码",
-        "交钥匙给有流程的接待站",
-        "不接受陌生人进家"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C08",
-      "section": "C",
-      "title": "最愿意使用的下单方式？",
-      "prompt": "",
-      "options": [
-        "微信小程序",
-        "微信客服/电话",
-        "去社区接待站找人帮助预约"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C09",
-      "section": "C",
-      "title": "最近一次外出时，你实际如何安排宠物照护？",
-      "prompt": "最近一次发生时间：____；外出天数：____；宠物种类/数量：____。\n实际支出及币种：____；最不满意之处：____；能否描述一次没有解决好的情况：____。",
-      "options": [
-        "亲友照看",
-        "寄养",
-        "付费上门",
-        "自行安排",
-        "没有此需求"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C10",
-      "section": "C",
-      "title": "在明确服务内容后，你愿意支付多少？",
-      "prompt": "调查员先统一说明：服务项目____；宠物数量____；时长____分钟；包含____；不包含____；日期/时段____；币种____。不同服务分别填写，不能把喂猫与遛狗混算。\n每次可接受金额：____；超过什么价格会改用其他方式：____。\n愿意试用的日期/情境：____；在相同内容和价格下，什么原因仍会让你拒绝：____。",
-      "options": [
-        "有明确需求，价格合适愿意预约",
-        "只想了解",
-        "不会购买",
-        "条件不足，暂无法判断"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C11",
-      "section": "C",
-      "title": "预约前是否希望看到服务人员信息？",
-      "prompt": "",
-      "options": [
-        "必须选择具体人",
-        "平台派人即可，但要身份信息和培训情况",
-        "都可以"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "C12",
-      "section": "C",
-      "title": "接受试运营问卷后进一步联系吗？（自愿）",
-      "prompt": "联系方式由项目方通过单独、明确告知的渠道收集；不要在公开问卷中要求填写住宅门锁密码或详细医疗记录。",
-      "options": [
-        "可以",
-        "不可以"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D01",
-      "section": "D",
-      "title": "希望从事的岗位？",
-      "prompt": "",
-      "options": [
-        "社区接待",
-        "上门喂养/遛狗",
-        "两者都能接受",
-        "尚未确定"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D02",
-      "section": "D",
-      "title": "有宠物照护经历吗？",
-      "prompt": "",
-      "options": [
-        "家养经验",
-        "工作经验",
-        "无经验愿意培训"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D03",
-      "section": "D",
-      "title": "可安排的工作时间？",
-      "prompt": "",
-      "options": [
-        "工作日白天",
-        "晚上",
-        "周末",
-        "节假日",
-        "灵活排班"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D04",
-      "section": "D",
-      "title": "是否可完成手机操作和服务报告？",
-      "prompt": "",
-      "options": [
-        "可独立使用",
-        "培训后可以",
-        "需要现场辅助"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D05",
-      "section": "D",
-      "title": "可否接受统一培训及考核？",
-      "prompt": "",
-      "options": [
-        "可以",
-        "有条件可以",
-        "暂时不可以"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D06",
-      "section": "D",
-      "title": "对入户与宠物风险的顾虑？（多选）",
-      "prompt": "",
-      "options": [
-        "宠物抓咬",
-        "财物纠纷",
-        "独自上门安全",
-        "医疗紧急状况",
-        "交通距离",
-        "暂无"
-      ],
-      "single": false,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D07",
-      "section": "D",
-      "title": "期望的工资/结算模式？",
-      "prompt": "",
-      "options": [
-        "固定工资",
-        "时薪",
-        "按单结算",
-        "底薪加绩效",
-        "待协商"
-      ],
-      "single": true,
-      "required": false,
-      "maxChoices": null
-    },
-    {
-      "id": "D08",
-      "section": "D",
-      "title": "上门人员有何交通条件？",
-      "prompt": "",
-      "options": [
-        "步行",
-        "自行车/电动自行车",
-        "公共交通",
-        "自驾",
-        "不适用"
-      ],
-      "single": true,
-      "required": false,
       "maxChoices": null
     }
   ]

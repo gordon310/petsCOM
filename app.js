@@ -1,16 +1,16 @@
 'use strict';
 // shortcut: answers stay in this browser and are returned as a file; add a private collection service if central submission is required.
 (async function () {
-  const key = 'petscom-questionnaire-v02';
+  const key = 'petscom-operator-questionnaire-v03';
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const sections = {A:['项目方基础调查','请先填写已有事实与候选方案。尚未确定的事项填写「待讨论」。'],B:['社区合作方','两个社区请分别填写一份，明确场地、费用和就业安排。'],C:['目标居民','请根据真实照护经历回答，价格需与具体服务内容和币种一起填写。'],D:['拟聘人员','请填写你的岗位意愿、时间和培训条件。'],G:['Grill-me 追问','由负责人逐轮确认。先答 G01—G05；后续只讨论前置规则已确认的题。已填写不代表已获决策批准。']};
+  const sections = {A:['平台方基础确认','由平台运营方填写经营主体、合作现状、服务、人力及系统信息。外部事项未掌握时注明待核实与跟进人。'],G:['Grill-me 决策追问','由平台业务负责人逐轮确认。先答 G01—G05；后续只讨论前置规则已确认的题。']};
   let data, state = {meta:{},answers:{},section:'A'}, storageReady = true;
   try {
     const response = await fetch('questionnaire.json', {cache:'no-cache'});
     if (!response.ok) throw new Error('无法加载题目');
     data = await response.json();
-    if (data.version !== '0.2' || data.questions.length !== 82) throw new Error('题目版本不匹配');
+    if (data.version !== '0.3' || data.questions.length !== 54) throw new Error('题目版本不匹配');
   } catch (error) {
     $('status').className = 'error';
     $('status').textContent = '问卷未能加载，请刷新重试。仍无法打开时，请联系项目负责人。';
@@ -24,7 +24,7 @@
       for (const field of ['respondent','role','organization']) {
         if (typeof draft.meta?.[field] === 'string') state.meta[field] = draft.meta[field];
       }
-      if (!Object.hasOwn(sections, state.meta.role || 'A')) state.meta.role = '';
+
       if (Object.hasOwn(sections,draft.section)) state.section = draft.section;
       for (const q of data.questions) {
         const saved = draft.answers[q.id];
@@ -94,7 +94,7 @@
     const target = event.target;
     if (['respondent','role','organization'].includes(target.id)) {
       state.meta[target.id] = target.value;
-      if (target.id==='role' && target.value) show(target.value);
+
       save();return;
     }
     const q = fields.find(q=>q.id===target.dataset.question);
@@ -114,7 +114,7 @@
   });
   function report() {
     const time = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Tokyo',hour12:false});
-    const lines = ['# 社区宠物到家需求确认答复 V0.2','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`身份：${sections[state.meta.role]?.[0] || '未填写'}`,`社区或单位：${state.meta.organization || '未填写'}`,'','本文件由填写人导出，需回传给项目负责人。填写不等于负责人批准，未回答不视为同意。',''];
+    const lines = ['# 社区宠物到家平台运营方需求确认答复 V0.3','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`填写人岗位：${state.meta.role || '未填写'}`,`平台运营主体：${state.meta.organization || '未填写'}`,'','本文件由填写人导出，需回传给问卷发起人。填写不等于负责人批准，未回答不视为同意。',''];
     for (const [section,[title]] of Object.entries(sections)) {
       lines.push(`## ${title}`,'');
       for (const q of fields.filter(q=>q.section===section)) {
@@ -133,7 +133,7 @@
       const link = document.createElement('a');
       link.href=url;link.download=`社区宠物到家_问卷答复_${new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}.md`;
       document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
-      $('export-status').textContent='答复文件已生成。请在浏览器下载列表中找到文件，并回传给项目负责人。也可复制文字回传。';
+      $('export-status').textContent='答复文件已生成。请在浏览器下载列表中找到文件，并回传给问卷发起人。也可复制文字回传。';
     } catch (error) {
       $('export-status').textContent='文件导出失败，请点击「复制答复文字」保存。';
     }
@@ -144,16 +144,16 @@
     const content=report();
     try {
       await navigator.clipboard.writeText(content);
-      $('export-status').textContent='答复文字已复制，请粘贴到文档或消息中回传给项目负责人。';
+      $('export-status').textContent='答复文字已复制，请粘贴到文档或消息中回传给问卷发起人。';
     } catch (error) {
       $('copy-fallback').hidden=false;$('copy-fallback').value=content;$('copy-fallback').focus();$('copy-fallback').select();
-      $('export-status').textContent='自动复制不可用。请全选下方文字并复制，再回传给项目负责人。';
+      $('export-status').textContent='自动复制不可用。请全选下方文字并复制，再回传给问卷发起人。';
     }
   });
   show(state.section);
   $('survey').hidden=false;$('action-bar').hidden=false;
   if (storageReady) {
-    $('status').textContent='问卷已加载。请选择身份开始填写，已有本机草稿已恢复。';
+    $('status').textContent='问卷已加载。请平台运营方开始填写，已有本机草稿已恢复。';
     $('save-state').textContent='本机自动保存 · 导出后回传';
   } else $('save-state').textContent='自动保存不可用，请导出备份';
 })();

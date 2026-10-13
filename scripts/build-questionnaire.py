@@ -7,6 +7,10 @@ root = Path(__file__).resolve().parents[1]
 source = root / 'doc/05_社区宠物到家_平台运营方需求确认问卷_Grill-me_V0.3.md'
 text = source.read_text()
 questions = []
+known_section = re.search(r'## 已确认试点条件\n(.*?)(?=\n## )', text, re.S)
+assert known_section, 'Confirmed pilot facts are missing'
+confirmed_facts = [line[2:].strip() for line in known_section.group(1).splitlines() if line.startswith('- ')]
+assert confirmed_facts == ['试点所在地：中国杭州。', '试点对象：两个生活居民社区。']
 
 def clean(value):
     return re.sub(r'\*\*|➡️|❓', '', value).strip()
@@ -43,9 +47,9 @@ for match in re.finditer(r'\*\*([A]\d{2})(★?) (.*?)\*\*\s*\n(.*?)(?=\n\*\*[A]\
     limit = re.search(r'最多选\s*(\d+)\s*项', title)
     questions[-1]['maxChoices'] = int(limit.group(1)) if limit else None
 
-assert len(questions) == 54, len(questions)
-assert len({q['id'] for q in questions}) == 54
-assert {q['id'] for q in questions} == {f'{s}{i:02}' for s, count in [('G',30),('A',24)] for i in range(1,count+1)}
+assert len(questions) == 53, len(questions)
+assert len({q['id'] for q in questions}) == 53
+assert {q['id'] for q in questions} == {f'{s}{i:02}' for s, count in [('G',30),('A',24)] for i in range(1,count+1)} - {'A01'}
 for q in questions:
     assert q['title'] and isinstance(q['options'],list)
     assert q['id'] not in q.get('dependencies',[])
@@ -57,5 +61,5 @@ while remaining:
     assert frontier, 'Decision dependencies contain a cycle or an unknown question'
     settled.update(frontier)
     remaining = {qid: deps for qid, deps in remaining.items() if qid not in frontier}
-(root / 'questionnaire.json').write_text(json.dumps(dict(version='0.3', questions=questions), ensure_ascii=False, indent=2) + '\n')
-print('Generated 54 questions: 30 Grill-me + 24 operator questions.')
+(root / 'questionnaire.json').write_text(json.dumps(dict(version='0.3', confirmedFacts=confirmed_facts, questions=questions), ensure_ascii=False, indent=2) + '\n')
+print('Generated 53 questions: 30 Grill-me + 23 operator questions; Hangzhou pilot facts confirmed.')

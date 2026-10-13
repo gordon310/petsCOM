@@ -4,11 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="供平台运营方填写的社区宠物到家需求确认问卷。可在线填写、保存本机草稿并导出答复。">
 <title>平台运营方问卷 · 社区宠物到家</title>
-<link rel="stylesheet" href="style.css?v=0.3"><script src="app.js?v=0.3" defer></script>
+<link rel="stylesheet" href="style.css?v=0.3-hangzhou"><script src="app.js?v=0.3-hangzhou" defer></script>
 </head>
 <body>
-<header class="hero"><div class="wrap"><div class="eyebrow">平台运营方 · 两社区试点 · V0.3</div><h1>平台运营方需求确认</h1><p>请平台运营方确认服务范围、经营模式、履约责任与投入计划，再逐轮回答 Grill-me 追问。</p><div class="hero-note">填写 → 导出答复 → 回传给问卷发起人</div></div></header>
+<header class="hero"><div class="wrap"><div class="eyebrow">中国杭州 · 两个生活居民社区 · 平台运营方 V0.3</div><h1>平台运营方需求确认</h1><p>请平台运营方确认服务范围、经营模式、履约责任与投入计划，再逐轮回答 Grill-me 追问。</p><div class="hero-note">填写 → 导出答复 → 回传给问卷发起人</div></div></header>
 <main class="wrap">
+<section class="intro" aria-labelledby="confirmed-title"><h2 id="confirmed-title">已确认试点条件</h2><ul id="confirmed-facts"></ul><p class="small">所在地和社区类型已确认。平台方只需补充两个社区的名称、合作进度及场地条件。</p></section>
 <section class="intro" aria-label="填写说明"><strong>你的填写会自动保存到当前浏览器。</strong><p>完成后点击「导出答复」，把文件通过微信、邮件或约定渠道发给问卷发起人。页面不会自动提交，也不会把答案上传到公开仓库。请勿填写门锁密码、身份证、详细住宅地址或病历。</p><p class="small">换浏览器、换设备或清除浏览数据后，草稿不会同步。离开前建议导出一份备份。</p></section>
 <p id="status" role="status" aria-live="polite">正在加载问卷…</p>
 <form id="survey" hidden>
@@ -18,7 +19,7 @@
 <label>平台运营主体 / 公司<input id="organization" name="organization" placeholder="平台运营公司或团队名称"></label>
 </div><p class="small">本问卷由平台运营方填写。社区、居民和人员信息请提供平台方已掌握的证据；尚未掌握时填写待核实、跟进人及日期。</p></section>
 <nav id="sections" class="tabs" aria-label="问卷分组"></nav>
-<div class="progress"><span id="progress-text"></span><progress id="progress" max="54" value="0" aria-label="已填写问题数"></progress></div>
+<div class="progress"><span id="progress-text"></span><progress id="progress" max="53" value="0" aria-label="已填写问题数"></progress></div>
 <div id="panels"></div>
 <section class="finish"><h2>填写完毕，回传答复</h2><p>可导出部分答复；未回答的题会明确列为「未回答」。选项之外的金额、日期、负责人和理由，请填入各题补充栏。</p><button type="button" id="download" class="primary">导出答复文件</button><button type="button" id="copy" class="secondary">复制答复文字</button><p id="export-status" role="status" aria-live="polite"></p><textarea id="copy-fallback" aria-label="答复文字，可全选复制" hidden readonly></textarea></section>
 </form>

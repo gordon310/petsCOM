@@ -10,7 +10,7 @@
     const response = await fetch('questionnaire.json', {cache:'no-cache'});
     if (!response.ok) throw new Error('无法加载题目');
     data = await response.json();
-    if (data.version !== '0.3' || data.questions.length !== 54) throw new Error('题目版本不匹配');
+    if (data.version !== '0.3' || data.questions.length !== 53) throw new Error('题目版本不匹配');
   } catch (error) {
     $('status').className = 'error';
     $('status').textContent = '问卷未能加载，请刷新重试。仍无法打开时，请联系项目负责人。';
@@ -26,6 +26,8 @@
       }
 
       if (Object.hasOwn(sections,draft.section)) state.section = draft.section;
+      if (draft.archivedAnswers && typeof draft.archivedAnswers === 'object' && !Array.isArray(draft.archivedAnswers)) state.archivedAnswers = draft.archivedAnswers;
+      if (draft.answers.A01) state.archivedAnswers = {...state.archivedAnswers,A01:draft.answers.A01};
       for (const q of data.questions) {
         const saved = draft.answers[q.id];
         if (saved && Array.isArray(saved.selected) && typeof saved.text === 'string') {
@@ -41,6 +43,7 @@
   const answer = q => state.answers[q.id] || {selected:[],text:''};
   const hasAnswer = q => answer(q).selected.length > 0 || answer(q).text.trim().length > 0;
   const fields = data.questions;
+  $('confirmed-facts').innerHTML = data.confirmedFacts.map(fact=>`<li>${escape(fact)}</li>`).join('');
   $('sections').innerHTML = Object.entries(sections).map(([section,[label]]) => `<button type="button" data-section="${section}" aria-pressed="false">${escape(label)}<small>${fields.filter(q=>q.section===section).length}</small></button>`).join('');
   $('panels').innerHTML = Object.entries(sections).map(([section,[label,description]]) => `<section data-panel="${section}" hidden><div class="section-intro"><h2>${escape(label)}</h2><p>${escape(description)}</p></div>${fields.filter(q=>q.section===section).map(q=>{
     const a = answer(q);
@@ -115,6 +118,7 @@
   function report() {
     const time = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Tokyo',hour12:false});
     const lines = ['# 社区宠物到家平台运营方需求确认答复 V0.3','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`填写人岗位：${state.meta.role || '未填写'}`,`平台运营主体：${state.meta.organization || '未填写'}`,'','本文件由填写人导出，需回传给问卷发起人。填写不等于负责人批准，未回答不视为同意。',''];
+    lines.push('## 已确认试点条件','',...data.confirmedFacts.map(fact=>'- '+fact),'');
     for (const [section,[title]] of Object.entries(sections)) {
       lines.push(`## ${title}`,'');
       for (const q of fields.filter(q=>q.section===section)) {

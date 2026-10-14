@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="供平台运营方填写的社区宠物到家需求确认问卷。可在线填写、保存本机草稿并导出答复。">
-<title>平台运营方问卷 · 社区宠物到家</title>
-<link rel="stylesheet" href="style.css?v=0.3-hangzhou"><script src="app.js?v=0.3-hangzhou" defer></script>
+<meta name="description" content="供平台运营方定义未来小程序应用流程的业务调查。可在线填写、保存本机草稿并导出答复。">
+<title>小程序运营业务流程调查 · 社区宠物到家</title>
+<link rel="stylesheet" href="style.css?v=0.4-workflows"><script src="app.js?v=0.4-workflows" defer></script>
 </head>
 <body>
-<header class="hero"><div class="wrap"><div class="eyebrow">中国杭州 · 两个生活居民社区 · 平台运营方 V0.3</div><h1>平台运营方需求确认</h1><p>请平台运营方确认服务范围、经营模式、履约责任与投入计划，再逐轮回答 Grill-me 追问。</p><div class="hero-note">填写 → 导出答复 → 回传给问卷发起人</div></div></header>
+<header class="hero"><div class="wrap"><div class="eyebrow">中国杭州 · 两个生活居民社区 · 运营业务流程调查 V0.4</div><h1>小程序运营业务流程调查</h1><p>请定义客户怎样预约、工作人员怎样服务、后台怎样受理和审核，以及退回或异常后怎样继续。</p><div class="hero-note">填写 → 导出答复 → 回传给问卷发起人</div></div></header>
 <main class="wrap">
 <section class="intro" aria-labelledby="confirmed-title"><h2 id="confirmed-title">已确认试点条件</h2><ul id="confirmed-facts"></ul><p class="small">所在地和社区类型已确认。平台方只需补充两个社区的名称、合作进度及场地条件。</p></section>
 <section class="intro" aria-label="填写说明"><strong>你的填写会自动保存到当前浏览器。</strong><p>完成后点击「导出答复」，把文件通过微信、邮件或约定渠道发给问卷发起人。页面不会自动提交，也不会把答案上传到公开仓库。请勿填写门锁密码、身份证、详细住宅地址或病历。</p><p class="small">换浏览器、换设备或清除浏览数据后，草稿不会同步。离开前建议导出一份备份。</p></section>
@@ -17,14 +17,15 @@
 <label>称呼或姓名<input id="respondent" name="respondent" autocomplete="name" placeholder="牵头填写人或专题负责人"></label>
 <label>岗位 / 职责<input id="role" name="role" placeholder="运营负责人 / 调度 / 客服 / 合作负责人"></label>
 <label>平台运营主体 / 公司<input id="organization" name="organization" placeholder="平台运营公司或团队名称"></label>
-</div><p class="small">本问卷由平台运营方填写。社区、居民和人员信息请提供平台方已掌握的证据；尚未掌握时填写待核实、跟进人及日期。</p></section>
-<nav id="sections" class="tabs" aria-label="问卷分组"></nav>
-<div class="progress"><span id="progress-text"></span><progress id="progress" max="53" value="0" aria-label="已填写问题数"></progress></div>
+</div><p class="small">所有分组均由平台运营方回答。各题的 Grill-me 是日常业务场景追问，帮助明确操作和审核流程；未定事项填写跟进人和反馈时间。</p></section>
+<section id="old-draft" class="intro" hidden><strong>旧版草稿已保留</strong><p>这次题目已按业务流程重写，旧答案不会自动带入不同题意。可以导出旧版答复作为参考。</p><button id="download-previous" type="button" class="secondary">导出旧版答复</button><p id="old-export-status" role="status"></p></section>
+<div class="section-intro"><h2>按业务环节填写</h2><p>推荐路径：客户端申请 → 运营受理与审核 → 安排人员 → 工作人员接单并入户 → 按清单服务 → 检查报告 → 客户确认与售后。具体先后由你的答复确定。</p></div><nav id="sections" class="tabs" aria-label="问卷分组"></nav>
+<div class="progress"><span id="progress-text"></span><progress id="progress" max="38" value="0" aria-label="已填写问题数"></progress></div>
 <div id="panels"></div>
-<section class="finish"><h2>填写完毕，回传答复</h2><p>可导出部分答复；未回答的题会明确列为「未回答」。选项之外的金额、日期、负责人和理由，请填入各题补充栏。</p><button type="button" id="download" class="primary">导出答复文件</button><button type="button" id="copy" class="secondary">复制答复文字</button><p id="export-status" role="status" aria-live="polite"></p><textarea id="copy-fallback" aria-label="答复文字，可全选复制" hidden readonly></textarea></section>
+<section class="finish"><h2>填写完毕，回传答复</h2><p>可导出部分答复；未回答的题会明确列为「未回答」。请在各题补充栏写清责任岗位、操作顺序、处理期限，以及通过、退回或异常时的下一步。</p><button type="button" id="download" class="primary">导出答复文件</button><button type="button" id="copy" class="secondary">复制答复文字</button><p id="export-status" role="status" aria-live="polite"></p><textarea id="copy-fallback" aria-label="答复文字，可全选复制" hidden readonly></textarea></section>
 </form>
 <noscript><p class="error">此填写页面需要启用 JavaScript。你仍可打开下方需求文档，按题号回复。</p></noscript>
-<footer><a href="https://github.com/gordon310/petsCOM" target="_blank" rel="noopener">查看需求文档及参考原型 ↗</a><p>需求讨论稿 · 推荐方案须由负责人确认，填写问卷不代表批准正式研发。</p></footer>
+<footer><a href="https://github.com/gordon310/petsCOM" target="_blank" rel="noopener">查看需求文档及参考原型 ↗</a><p>需求讨论稿 · 推荐业务流程须由运营方确认，填写问卷不代表批准正式研发。</p></footer>
 </main>
 <div class="action-bar" id="action-bar" hidden><div class="wrap"><span id="save-state">本机草稿</span><button type="button" id="download-sticky" class="primary">导出答复</button></div></div>
 </body></html>

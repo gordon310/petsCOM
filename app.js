@@ -1,21 +1,22 @@
 'use strict';
 // shortcut: answers stay in this browser and are returned as a file; add a private collection service if central submission is required.
 (async function () {
-  const key = 'petscom-operator-questionnaire-v03';
+  const key = 'petscom-business-flow-questionnaire-v04';
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const sections = {A:['平台方基础确认','由平台运营方填写经营主体、合作现状、服务、人力及系统信息。外部事项未掌握时注明待核实与跟进人。'],G:['Grill-me 决策追问','由平台业务负责人逐轮确认。先答 G01—G05；后续只讨论前置规则已确认的题。']};
-  let data, state = {meta:{},answers:{},section:'A'}, storageReady = true;
+  let sections;
+  let data, state = {meta:{},answers:{},section:'S'}, storageReady = true;
   try {
     const response = await fetch('questionnaire.json', {cache:'no-cache'});
     if (!response.ok) throw new Error('无法加载题目');
     data = await response.json();
-    if (data.version !== '0.3' || data.questions.length !== 53) throw new Error('题目版本不匹配');
+    if (data.version !== '0.4' || data.questions.length !== 38) throw new Error('题目版本不匹配');
   } catch (error) {
     $('status').className = 'error';
     $('status').textContent = '问卷未能加载，请刷新重试。仍无法打开时，请联系项目负责人。';
     return;
   }
+  sections = Object.fromEntries(data.sections.map(([id,title,description])=>[id,[title,description]]));
   try {
     const stored = localStorage.getItem(key);
     if (stored) {
@@ -26,8 +27,6 @@
       }
 
       if (Object.hasOwn(sections,draft.section)) state.section = draft.section;
-      if (draft.archivedAnswers && typeof draft.archivedAnswers === 'object' && !Array.isArray(draft.archivedAnswers)) state.archivedAnswers = draft.archivedAnswers;
-      if (draft.answers.A01) state.archivedAnswers = {...state.archivedAnswers,A01:draft.answers.A01};
       for (const q of data.questions) {
         const saved = draft.answers[q.id];
         if (saved && Array.isArray(saved.selected) && typeof saved.text === 'string') {
@@ -48,15 +47,15 @@
   $('panels').innerHTML = Object.entries(sections).map(([section,[label,description]]) => `<section data-panel="${section}" hidden><div class="section-intro"><h2>${escape(label)}</h2><p>${escape(description)}</p></div>${fields.filter(q=>q.section===section).map(q=>{
     const a = answer(q);
     const deps = (q.dependencies || []).map(id=>`<a href="#q-${id}" data-dependency="${id}">${id}</a>`).join('');
-    return `<details class="question" id="q-${q.id}"><summary><span class="qid">${q.id}</span><span class="q-title">${escape(q.title)}${q.required===true?' <small>★</small>':''}</span><span class="answered" id="badge-${q.id}"></span><span class="chevron" aria-hidden="true">⌄</span></summary><div class="q-content">${deps?`<div class="deps">前置问题：${deps}<span>（请先由负责人确认）</span></div>`:''}${q.prompt?`<p class="prompt">${escape(q.prompt)}</p>`:''}${q.recommended?`<div class="callout"><strong>推荐方案</strong>${escape(q.recommended)}</div><div class="callout challenge"><strong>Grill-me 场景追问</strong>${escape(q.challenge)}</div><p class="impact"><strong>范围与排期影响：</strong>${escape(q.impact)}</p>`:''}${q.options.length?`<fieldset><legend>${q.section==='G'?'你的答复':q.single?'选择一项':q.maxChoices?`最多选择 ${q.maxChoices} 项`:'选择适用项（可多选）'}</legend>${q.options.map((option,i)=>`<label class="option"><input type="${q.single?'radio':'checkbox'}" name="choice-${q.id}" value="${i}" data-question="${q.id}" data-option="${i}" ${a.selected.includes(option)?'checked':''}><span>${escape(option)}</span></label>`).join('')}</fieldset>`:''}<label for="text-${q.id}">${q.section==='G'?'追问答复、参数及决策依据':'补充说明 / 填写空白处'}<textarea id="text-${q.id}" data-question="${q.id}" data-text rows="3" placeholder="${escape(q.section==='G'?q.required:'请写明选项中的空白内容、数值、币种、日期或理由；不适用可注明。')}">${escape(a.text)}</textarea></label>${q.section==='G'?`<p class="small">需补齐：${escape(q.required)}<br>请同时写明决策人、依据，以及待补材料的负责人和日期。</p>`:''}</div></details>`;
+    return `<details class="question" id="q-${q.id}"><summary><span class="qid">${q.id}</span><span class="q-title">${escape(q.title)}${q.required===true?' <small>★</small>':''}</span><span class="answered" id="badge-${q.id}"></span><span class="chevron" aria-hidden="true">⌄</span></summary><div class="q-content">${deps?`<div class="deps">前置问题：${deps}<span>（请先由负责人确认）</span></div>`:''}${q.prompt?`<p class="prompt">${escape(q.prompt)}</p>`:''}${q.recommended?`<div class="callout"><strong>推荐业务流程</strong>${escape(q.recommended)}</div><div class="callout challenge"><strong>场景追问 · Grill-me</strong>${escape(q.challenge)}</div>`:''}${q.options.length?`<fieldset><legend>${q.single?'选择一种安排':'选择适用项（可多选）'}</legend>${q.options.map((option,i)=>`<label class="option"><input type="${q.single?'radio':'checkbox'}" name="choice-${q.id}" value="${i}" data-question="${q.id}" data-option="${i}" ${a.selected.includes(option)?'checked':''}><span>${escape(option)}</span></label>`).join('')}</fieldset>`:''}<label for="text-${q.id}">补充业务步骤与责任岗位<textarea id="text-${q.id}" data-question="${q.id}" data-text rows="3" placeholder="${escape(q.required)}">${escape(a.text)}</textarea></label><p class="small">需说明：${escape(q.required)}<br>请写业务岗位、操作步骤、处理时间和退回/异常的下一步；未定事项写跟进人及日期。</p></div></details>`;
   }).join('')}</section>`).join('');
   for (const field of ['respondent','role','organization']) $(field).value = state.meta[field] || '';
   function updateProgress() {
     const count = fields.filter(hasAnswer).length;
     const group = fields.filter(q=>q.section===state.section);
-    $('progress-text').textContent = `本组已填写 ${group.filter(hasAnswer).length} / ${group.length} 题 · 全部 ${count} / ${fields.length}`;
+    $('progress-text').textContent = `本组已记录 ${group.filter(hasAnswer).length} / ${group.length} 题 · 全部 ${count} / ${fields.length}`;
     $('progress').value = count;
-    for (const q of fields) $('badge-'+q.id).textContent = hasAnswer(q)?'已填写':'';
+    for (const q of fields) $('badge-'+q.id).textContent = hasAnswer(q)?'已记录':'';
   }
   function save() {
     if (storageReady) {
@@ -88,7 +87,7 @@
   $('panels').addEventListener('click', event=>{
     const target = event.target.closest('[data-dependency]');
     if (target) {
-      event.preventDefault();show('G');
+      event.preventDefault();show(target.dataset.dependency.charAt(0));
       const details = $('q-'+target.dataset.dependency);details.open=true;details.scrollIntoView({behavior:'smooth',block:'start'});save();
     }
   });
@@ -117,15 +116,15 @@
   });
   function report() {
     const time = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Tokyo',hour12:false});
-    const lines = ['# 社区宠物到家平台运营方需求确认答复 V0.3','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`填写人岗位：${state.meta.role || '未填写'}`,`平台运营主体：${state.meta.organization || '未填写'}`,'','本文件由填写人导出，需回传给问卷发起人。填写不等于负责人批准，未回答不视为同意。',''];
+    const lines = ['# 社区宠物到家小程序运营业务流程需求答复 V0.4','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`填写人岗位：${state.meta.role || '未填写'}`,`平台运营主体：${state.meta.organization || '未填写'}`,'','本文件由填写人导出，需回传给问卷发起人。填写不等于负责人批准，未回答不视为同意。',''];
     lines.push('## 已确认试点条件','',...data.confirmedFacts.map(fact=>'- '+fact),'');
     for (const [section,[title]] of Object.entries(sections)) {
       lines.push(`## ${title}`,'');
       for (const q of fields.filter(q=>q.section===section)) {
         const a = answer(q);
         lines.push(`### ${q.id} ${q.title}`,'');
-        if (q.section==='G') lines.push(`推荐方案：${q.recommended}`,`场景追问：${q.challenge}`,'');
-        lines.push(`选择：${a.selected.length?a.selected.join('；'):'未选择'}`,`说明：${a.text.trim() || '未填写'}`,`填写状态：${hasAnswer(q)?'有答复（参数完整性待核对）':'未回答'}`,'');
+        lines.push(`业务问题：${q.prompt}`,`推荐业务流程：${q.recommended}`,`场景追问：${q.challenge}`,'');
+        lines.push(`选择：${a.selected.length?a.selected.join('；'):'未选择'}`,`说明：${a.text.trim() || '未填写'}`,`填写状态：${hasAnswer(q)?'有答复（流程完整性待核对）':'未回答'}`,'');
       }
     }
     return lines.join('\n');
@@ -154,6 +153,33 @@
       $('export-status').textContent='自动复制不可用。请全选下方文字并复制，再回传给问卷发起人。';
     }
   });
+  let previousDraft;
+  try {
+    const raw = localStorage.getItem('petscom-operator-questionnaire-v03');
+    if (raw) {
+      const draft = JSON.parse(raw);
+      if (draft.version === '0.3' && draft.answers && Object.values(draft.answers).some(a=>a && ((typeof a.text==='string' && a.text.trim()) || (Array.isArray(a.selected) && a.selected.length)))) previousDraft=draft;
+    }
+  } catch (error) { /* The old storage key is left unchanged. */ }
+  if (previousDraft) {
+    $('old-draft').hidden=false;
+    $('download-previous').addEventListener('click',async()=>{
+      try {
+        const response=await fetch('archive/questionnaire-v03.json');
+        if (!response.ok) throw new Error('old version unavailable');
+        const prior=await response.json();
+        const lines=['# 旧版平台运营方需求答复 V0.3','',`填写人：${previousDraft.meta?.respondent || '未填写'}`,`岗位：${previousDraft.meta?.role || '未填写'}`,`平台：${previousDraft.meta?.organization || '未填写'}`,'','此文件保留旧版题意，不能直接作为新版业务流程答复。',''];
+        for (const q of prior.questions) {
+          const a=previousDraft.answers[q.id] || {};
+          lines.push(`## ${q.id} ${q.title}`,`选择：${Array.isArray(a.selected)?a.selected.join('；'):'未选择'}`,`说明：${typeof a.text==='string'?a.text:'未填写'}`,'');
+        }
+        if (previousDraft.archivedAnswers) lines.push('## 更早的保留答复','',JSON.stringify(previousDraft.archivedAnswers,null,2));
+        const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/markdown;charset=utf-8'}));
+        const link=document.createElement('a');link.href=url;link.download='社区宠物到家_旧版问卷答复_V0.3.md';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+        $('old-export-status').textContent='旧版答复已生成，请保留作为参考。';
+      } catch (error) { $('old-export-status').textContent='旧版导出未成功，旧草稿仍保留，请重试或联系问卷发起人。'; }
+    });
+  }
   show(state.section);
   $('survey').hidden=false;$('action-bar').hidden=false;
   if (storageReady) {

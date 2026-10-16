@@ -1,0 +1,16 @@
+name = "petscom-relay"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = false
+
+[[routes]]
+pattern = "petscom-relay.zoubeacon.com"
+custom_domain = true
+
+[vars]
+GITHUB_REPO = "gordon310/petsCOM"
+ALLOWED_ORIGIN = "https://gordon310.github.io"
+FORM_KEY = "petscom-business-v04-20261017"
+
+# GITHUB_TOKEN is configured separately as a Worker secret. It must be limited
+# to gordon310/petsCOM, Issues read/write; no token belongs in browser files.

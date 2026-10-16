@@ -1,10 +1,10 @@
-'use strict';
-// shortcut: answers stay in this browser and are returned as a file; add a private collection service if central submission is required.
+import {SCHEMA,normalizeSubmission} from './intake.mjs';
 (async function () {
   const key = 'petscom-business-flow-questionnaire-v04';
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let sections;
+  let intakeConfig;
   let data, state = {meta:{},answers:{},section:'S'}, storageReady = true;
   try {
     const response = await fetch('questionnaire.json', {cache:'no-cache'});
@@ -26,6 +26,7 @@
         if (typeof draft.meta?.[field] === 'string') state.meta[field] = draft.meta[field];
       }
 
+      if (draft.online && typeof draft.online==='object') state.online=draft.online;
       if (Object.hasOwn(sections,draft.section)) state.section = draft.section;
       for (const q of data.questions) {
         const saved = draft.answers[q.id];
@@ -116,7 +117,7 @@
   });
   function report() {
     const time = new Date().toLocaleString('zh-CN', {timeZone:'Asia/Tokyo',hour12:false});
-    const lines = ['# 社区宠物到家小程序运营业务流程需求答复 V0.4','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`填写人岗位：${state.meta.role || '未填写'}`,`平台运营主体：${state.meta.organization || '未填写'}`,'','本文件由填写人导出，需回传给问卷发起人。填写不等于负责人批准，未回答不视为同意。',''];
+    const lines = ['# 社区宠物到家小程序运营业务流程需求答复 V0.4','',`导出时间：${time}（日本时间）`,`填写人：${state.meta.respondent || '未填写'}`,`填写人岗位：${state.meta.role || '未填写'}`,`平台运营主体：${state.meta.organization || '未填写'}`,'','此文件为答卷本地备份；线上提交记录请查看答卷记录页。填写不等于负责人批准，未回答不视为同意。',''];
     lines.push('## 已确认试点条件','',...data.confirmedFacts.map(fact=>'- '+fact),'');
     for (const [section,[title]] of Object.entries(sections)) {
       lines.push(`## ${title}`,'');
@@ -142,7 +143,7 @@
     }
   }
   $('download').addEventListener('click',download);
-  $('download-sticky').addEventListener('click',download);
+
   $('copy').addEventListener('click',async()=>{
     const content=report();
     try {
@@ -152,6 +153,58 @@
       $('copy-fallback').hidden=false;$('copy-fallback').value=content;$('copy-fallback').focus();$('copy-fallback').select();
       $('export-status').textContent='自动复制不可用。请全选下方文字并复制，再回传给问卷发起人。';
     }
+  });
+  try {
+    const response=await fetch('intake-config.json',{cache:'no-cache'});
+    if (!response.ok) throw Error('missing configuration');
+    intakeConfig=await response.json();
+    if (!intakeConfig.enabled) throw Error('not enabled');
+    const relay=new URL(intakeConfig.relayUrl);
+    if (relay.protocol!=='https:' && !['127.0.0.1','localhost'].includes(relay.hostname)) throw Error('invalid relay');
+    $('submit-answer').disabled=false;$('submit-sticky').disabled=false;
+  } catch {
+    $('submit-status').textContent='线上收集服务尚未启用；草稿和导出备份仍可使用。';
+  }
+  const testMode=new URLSearchParams(location.search).get('mode')==='test';
+  if (testMode) { $('test-notice').hidden=false; }
+  async function submitAnswer() {
+    let payload;
+    try {
+      if (!intakeConfig?.enabled) throw Error('线上收集服务尚未启用。');
+      if (!$('public-consent').checked) throw Error('请先阅读并勾选答卷公开留档说明。');
+      const candidate={schema:SCHEMA,submissionId:crypto.randomUUID(),meta:state.meta,answers:state.answers,consentPublic:true,isTest:testMode};
+      // Missing optional role is an empty string rather than an absent field.
+      candidate.meta={respondent:state.meta.respondent || '',organization:state.meta.organization || '',role:state.meta.role || ''};
+      payload=normalizeSubmission(candidate,data);
+      const signature=JSON.stringify({meta:payload.meta,answers:payload.answers,isTest:payload.isTest});
+      if (state.online?.signature===signature && state.online.id) payload.submissionId=state.online.id;
+      state.online={id:payload.submissionId,signature};save();
+    } catch(error) { $('submit-status').textContent=error.message;return; }
+    for (const id of ['submit-answer','submit-sticky']) $(id).disabled=true;
+    $('submit-status').textContent='正在提交并核实线上记录，请稍候…';
+    try {
+      const base=new URL(intakeConfig.relayUrl);
+      const response=await fetch(new URL('responses',base),{method:'POST',headers:{'Content-Type':'application/json','x-form-key':intakeConfig.formKey},body:JSON.stringify(payload),signal:AbortSignal.timeout(30000)});
+      const result=await response.json();
+      if (!response.ok || result.ok!==true || !Number.isSafeInteger(result.number) || result.submissionId!==payload.submissionId) throw Error(result.error || '服务未返回有效记录。');
+      let verified=result.verified===true;
+      if (!verified) {
+        const check=await fetch(new URL('responses/'+result.number,base),{signal:AbortSignal.timeout(15000)});
+        const body=check.ok?await check.json():{};
+        verified=body.record?.submissionId===payload.submissionId;
+      }
+      if (!verified) throw Error('记录已接收，但尚未核实；请保留草稿后用同一答卷重试。');
+      state.online.receipt=result.number;save();
+      location.href='thanks.html?no='+result.number+'&id='+encodeURIComponent(payload.submissionId);
+    } catch(error) {
+      $('submit-status').textContent='未能确认提交结果：'+error.message+' 草稿仍保留，请稍后重试；同一答卷将使用相同提交编号。';
+      for (const id of ['submit-answer','submit-sticky']) $(id).disabled=false;
+    }
+  }
+  $('submit-answer').addEventListener('click',submitAnswer);
+  $('submit-sticky').addEventListener('click',()=>{
+    if (!$('public-consent').checked) { $('submit-answer').scrollIntoView({behavior:'smooth',block:'center'});$('public-consent').focus();$('submit-status').textContent='请先确认答卷公开留档说明，再提交。'; }
+    else submitAnswer();
   });
   let previousDraft;
   try {
@@ -184,6 +237,6 @@
   $('survey').hidden=false;$('action-bar').hidden=false;
   if (storageReady) {
     $('status').textContent='问卷已加载。请平台运营方开始填写，已有本机草稿已恢复。';
-    $('save-state').textContent='本机自动保存 · 导出后回传';
+    $('save-state').textContent='本机自动保存 · 点击提交后线上留档';
   } else $('save-state').textContent='自动保存不可用，请导出备份';
 })();

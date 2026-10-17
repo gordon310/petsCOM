@@ -11,8 +11,12 @@ if [ ! -x "$wrangler" ]; then
   echo '请先在项目目录运行 npm ci --ignore-scripts。'
   exit 1
 fi
-printf '请使用 PAMFB 所在的 Cloudflare 账号完成浏览器授权。\n'
-"$wrangler" login --use-keyring --scopes account:read user:read workers:write workers_routes:write zone:read
+authorization_status=$("$wrangler" whoami 2>&1 || true)
+if [[ "$authorization_status" != *'workers_scripts (write)'* ]]; then
+  printf '请使用 PAMFB 所在的 Cloudflare 账号完成浏览器授权。\n'
+  "$wrangler" login --use-keyring --scopes account:read user:read workers:write workers_scripts:write workers_routes:write zone:read
+fi
+unset authorization_status
 "$wrangler" deploy --config relay/wrangler.toml
 printf '\n请准备 GitHub Fine-grained token：仅选择 gordon310/petsCOM，Issues: Read and write。\n'
 printf '创建入口：https://github.com/settings/personal-access-tokens/new\n'

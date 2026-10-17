@@ -21,7 +21,7 @@ cd /Volumes/DEV/petsCOM
 bash scripts/activate-online-collection.sh
 ```
 
-脚本先打开 Cloudflare 授权，使用 PAMFB 所在账号。然后部署 `petscom-relay`，从隐藏的本机终端输入读取 GitHub Fine-grained token 并直接写入 Worker secret。请仅选 `gordon310/petsCOM`，权限仅需 Issues 读写（Metadata 为 GitHub 必需权限）；不要使用通用 `gh` 登录令牌。token 不进入聊天、命令参数、网页或仓库。
+脚本检查已有 Cloudflare 授权；缺少脚本发布权限 `workers_scripts:write` 时才重新授权，使用 PAMFB 所在账号。然后部署 `petscom-relay`，从隐藏的本机终端输入读取 GitHub Fine-grained token 并直接写入 Worker secret。请仅选 `gordon310/petsCOM`，权限仅需 Issues 读写（Metadata 为 GitHub 必需权限）；不要使用通用 `gh` 登录令牌。token 不进入聊天、命令参数、网页或仓库。
 
 凭据配置完成后，脚本检查服务健康和 GitHub 读取能力，并创建一份带测试标记的答卷、回查和确认记录页可检索，再本地设置 `enabled=true`。Codex 随后完成带测试标记的实际提交、回查、多人/修订记录验收和前端发布。健康检查和单元测试不能代替真实线上提交验收。
 

@@ -22,7 +22,7 @@
 
 参考 TA 岛公开可核实的下单、客服沟通、入户和标准作业做法；本项目的审核、派单、退款等规则由运营方回答后确认。详细依据及候选主流程见 V0.4 文档。
 
-**线上收集升级尚待本机 Cloudflare 授权及 petsCOM 仓库限定凭据。当前公开页面仍是原版，不能据本机测试宣称已经线上回收。**
+**Cloudflare 授权和独立收集服务部署已完成，尚待配置 petsCOM 仓库限定的 GitHub 写入凭据。当前公开页面仍是原版，线上收集尚未启用。**
 
 沿用 PAMFB 的网页提交→独立 Worker→GitHub 答卷记录→核实回执流程。多人和每次修订分别保存，可在 `records.html` 查看。启用操作见 [部署说明](relay/README.md)，账户所有者可运行 `bash scripts/activate-online-collection.sh`。
 

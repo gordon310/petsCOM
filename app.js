@@ -1,6 +1,7 @@
 import {SCHEMA,normalizeSubmission} from './intake.mjs';
 (async function () {
-  const key = 'petscom-business-flow-questionnaire-v04';
+  const testMode=new URLSearchParams(location.search).get('mode')==='test';
+  const key = 'petscom-business-flow-questionnaire-v04'+(testMode?'-test':'');
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let sections;
@@ -165,7 +166,6 @@ import {SCHEMA,normalizeSubmission} from './intake.mjs';
   } catch {
     $('submit-status').textContent='线上收集服务尚未启用；草稿和导出备份仍可使用。';
   }
-  const testMode=new URLSearchParams(location.search).get('mode')==='test';
   if (testMode) { $('test-notice').hidden=false; }
   async function submitAnswer() {
     let payload;

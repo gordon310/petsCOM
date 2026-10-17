@@ -137,7 +137,7 @@ import {SCHEMA,normalizeSubmission} from './intake.mjs';
       const link = document.createElement('a');
       link.href=url;link.download=`社区宠物到家_问卷答复_${new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}.md`;
       document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
-      $('export-status').textContent='答复文件已生成。请在浏览器下载列表中找到文件，并回传给问卷发起人。也可复制文字回传。';
+      $('export-status').textContent='答复备份文件已生成，可在浏览器下载列表中找到。备份不代表线上提交；请点击「提交答卷」并核实成功回执。';
     } catch (error) {
       $('export-status').textContent='文件导出失败，请点击「复制答复文字」保存。';
     }
@@ -148,10 +148,10 @@ import {SCHEMA,normalizeSubmission} from './intake.mjs';
     const content=report();
     try {
       await navigator.clipboard.writeText(content);
-      $('export-status').textContent='答复文字已复制，请粘贴到文档或消息中回传给问卷发起人。';
+      $('export-status').textContent='答复文字已复制，可另存备份。线上回收请点击「提交答卷」并核实成功回执。';
     } catch (error) {
       $('copy-fallback').hidden=false;$('copy-fallback').value=content;$('copy-fallback').focus();$('copy-fallback').select();
-      $('export-status').textContent='自动复制不可用。请全选下方文字并复制，再回传给问卷发起人。';
+      $('export-status').textContent='自动复制不可用。请全选下方文字复制并另存备份；线上回收仍需点击「提交答卷」。';
     }
   });
   try {

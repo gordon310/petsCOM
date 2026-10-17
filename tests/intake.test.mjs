@@ -66,6 +66,18 @@ test('incorrect origin, entry key, missing server token, and malformed JSON neve
   const r=new Request(base+'/responses',{method:'POST',headers:{Origin:env.ALLOWED_ORIGIN,'x-form-key':'test-key'},body:'invalid'});
   assert.equal((await worker.fetch(r,env)).status,400);assert.equal(mock.store.length,0);
 });
+test('retry and record reads do not depend on a delayed GitHub label index',async()=>{
+  const mock=github();
+  globalThis.fetch=async(url,options)=>new URL(url).searchParams.has('labels')?Response.json([]):mock.fetch(url,options);
+  const p=payload(44);
+  const first=await (await worker.fetch(request(p),env)).json();
+  const retry=await (await worker.fetch(request(p),env)).json();
+  assert.equal(retry.number,first.number);assert.equal(retry.duplicate,true);assert.equal(mock.store.length,1);
+  const records=await (await worker.fetch(new Request(base+'/records'),env)).json();
+  assert.equal(records.records.length,1);
+  const reads=mock.calls.filter(c=>new URL(c.url).searchParams.has('per_page'));
+  assert.ok(reads.every(c=>c.options.cache==='no-store' && c.options.headers['Cache-Control']==='no-cache'));
+});
 test('receipt is checked, and failed GitHub saving does not produce a success receipt',async()=>{
   const mock=github();globalThis.fetch=mock.fetch;
   const posted=await worker.fetch(request(payload()),env);const p=await posted.json();assert.equal(p.verified,true);

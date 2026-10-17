@@ -1,5 +1,5 @@
 import questionnaire from '../questionnaire.json' with {type:'json'};
-import {LABEL,normalizeSubmission,issueFor,parseIssue} from '../intake.mjs';
+import {normalizeSubmission,issueFor,parseIssue} from '../intake.mjs';
 
 export default {
   async fetch(request,env) {
@@ -13,10 +13,11 @@ export default {
     if (request.method==='GET' && path==='/health') return reply({ready:Boolean(env.GITHUB_TOKEN && env.GITHUB_REPO==='gordon310/petsCOM'),repository:env.GITHUB_REPO || null},env.GITHUB_TOKEN?200:503);
     if (!['GET','POST'].includes(request.method)) return reply({error:'不支持的请求。'},405);
     if (!env.GITHUB_TOKEN || env.GITHUB_REPO!=='gordon310/petsCOM') return reply({error:'收集服务尚未配置完成，请联系问卷发起人。'},503);
-    const headers={Authorization:'Bearer '+env.GITHUB_TOKEN,Accept:'application/vnd.github+json','User-Agent':'petscom-questionnaire'};
+    const headers={Authorization:'Bearer '+env.GITHUB_TOKEN,Accept:'application/vnd.github+json','User-Agent':'petscom-questionnaire','Cache-Control':'no-cache'};
     const base='https://api.github.com/repos/'+env.GITHUB_REPO;
     async function list(page=1) {
-      const response=await fetch(`${base}/issues?state=all&labels=${LABEL}&sort=created&direction=desc&per_page=100&page=${page}`,{headers});
+      // Read repository issues directly: label-filtered results can lag a newly created answer.
+      const response=await fetch(`${base}/issues?state=all&sort=created&direction=desc&per_page=100&page=${page}`,{headers,cache:'no-store'});
       if (!response.ok) throw Error('无法读取已收集记录。');
       const issues=await response.json();
       return {issues,hasMore: /rel="next"/.test(response.headers.get('Link') || '')};
@@ -52,7 +53,7 @@ export default {
       const raw=new TextDecoder().decode(bytes);
       let payload;
       try { payload=normalizeSubmission(JSON.parse(raw),questionnaire); } catch(error) { return reply({error:error.message},400); }
-      // shortcut: retry de-duplication checks the latest 100 submissions; use durable storage for high-volume collection.
+      // shortcut: retry de-duplication checks the latest 100 repository issues; use durable storage for high-volume collection.
       const {issues}=await list();
       const existing=issues.map(parseIssue).find(r=>r?.submissionId===payload.submissionId);
       if (existing) {

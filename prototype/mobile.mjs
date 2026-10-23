@@ -1,5 +1,5 @@
-import {customerFor,services,serviceFor,statuses,reportStatuses,workerFor} from './model.mjs?v=1.0.1';
-import {h,icon,button,link,badge,status,money,sectionTitle,hint,empty,field,check,select,info,petArt,orderCard,orderInfo,formFooter,photoTiles} from './ui.mjs?v=1.0.1';
+import {customerFor,services,serviceFor,statuses,reportStatuses,workerFor} from './model.mjs?v=1.0.3';
+import {h,icon,button,link,badge,status,money,sectionTitle,hint,empty,field,check,select,info,petArt,orderCard,orderInfo,formFooter,photoTiles} from './ui.mjs?v=1.0.3';
 const rowLink=(title,sub,page,ico='file')=>`<button class="menu-row" data-nav="${page}"><span class="menu-icon">${icon(ico)}</span><span><b>${title}</b>${sub?`<small>${sub}</small>`:''}</span>${icon('arrow')}</button>`;
 const form=(name,html,attrs='')=>`<form data-form="${name}" ${attrs}>${html}</form>`;
 const orderAttrs=o=>`data-id="${h(o.id)}"`;

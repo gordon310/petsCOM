@@ -1,0 +1,19 @@
+{
+  "source": "毛佬佬修改(1).ai",
+  "sourceColors": {
+    "camel": "#C2A180",
+    "sage": "#BCC0A9",
+    "wordmark": "#040000",
+    "white": "#FFFFFF"
+  },
+  "uiColors": {
+    "ink": "#302A25",
+    "muted": "#6E685F",
+    "brandInk": "#795536",
+    "sidebar": "#40372E",
+    "canvas": "#F7F4EF",
+    "sageSurface": "#E9EBDD",
+    "warmSurface": "#F1E7DB",
+    "line": "#E2DACE"
+  }
+}

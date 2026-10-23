@@ -1,5 +1,5 @@
-import {customerFor,services,serviceFor,statuses,reportStatuses,workerFor,eligibleWorkers} from './model.mjs?v=1.0.1';
-import {h,icon,button,link,badge,status,money,sectionTitle,hint,empty,field,check,select,info,orderInfo,formFooter} from './ui.mjs?v=1.0.1';
+import {customerFor,services,serviceFor,statuses,reportStatuses,workerFor,eligibleWorkers} from './model.mjs?v=1.0.3';
+import {h,icon,button,link,badge,status,money,sectionTitle,hint,empty,field,check,select,info,orderInfo,formFooter} from './ui.mjs?v=1.0.3';
 const form=(name,html)=>`<form data-form="${name}">${html}</form>`;
 const card=(title,body,extra='')=>`<section class="desk-card"><div class="desk-card-head"><h3>${title}</h3>${extra}</div>${body}</section>`;
 const table=(heads,rows)=>`<div class="table-scroll"><table><thead><tr>${heads.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(x=>`<tr>${x.map(y=>`<td>${y}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${heads.length}">${empty('当前暂无待处理记录')}</td></tr>`}</tbody></table></div>`;

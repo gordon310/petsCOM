@@ -8,7 +8,28 @@ export const menus={
  station:[['dashboard','站点工作台','grid'],['orders','本站订单','bag'],['order','订单受理','file'],['proxy','辅助预约','plus'],['customers','居民与宠物','paw'],['staff','人员与排班','user'],['referrals','综合体转介','store'],['activities','社区活动','spark'],['support','客服与异常','chat'],['handover','站务交接','check']],
  hq:[['dashboard','运营总览','grid'],['orders','全部订单','bag'],['order','订单详情','file'],['reviews','审核中心','check'],['dispatch','派单调度','calendar'],['sites','社区站点','store'],['staff','人员资质','user'],['catalog','服务与价格','tag'],['quality','报告与质量','file'],['support','客服与售后','chat'],['referrals','综合体转介','paw'],['activities','活动管理','spark'],['finance','收款与结算','wallet'],['reports','经营分析','chart'],['permissions','角色与权限','lock'],['logs','操作记录','clock']]
 };
-export const statuses={pending_customer:'待本人确认',pending_review:'待审核',returned:'待补充资料',awaiting_payment:'待付款',awaiting_dispatch:'待派单',assigned:'待小哥接单',accepted:'待上门',in_service:'服务中',paused:'异常暂停',awaiting_confirmation:'待客户确认',completed:'已完成',cancelled:'已取消'};
+export const statuses={
+ pending_customer:'订单已代填待客户确认预约信息',
+ pending_review:'订单已提交待平台审核预约',
+ returned:'订单资料已退回待客户补充',
+ awaiting_payment:'订单审核已通过待客户确认费用并付款',
+ awaiting_dispatch:'订单已付款待平台安排服务小哥',
+ assigned:'订单已生成待小哥接单',
+ accepted:'小哥已接单待按预约时间上门服务',
+ in_service:'小哥已到场正在提供预约服务',
+ paused:'订单服务已暂停待平台处理异常',
+ awaiting_confirmation:'订单结束待客户确认',
+ completed:'客户已确认订单服务完成',
+ cancelled:'订单已取消本次服务不再执行',
+};
+export const reportStatuses={
+ none:'小哥尚未提交本次服务报告',
+ submitted:'服务报告已提交待客户确认订单',
+ confirmed:'客户已确认服务报告订单已完成',
+ checked:'平台已完成服务报告抽查',
+ returned:'服务报告已退回待小哥补充',
+ resubmitted:'小哥已补交服务报告待平台复核',
+};
 export const services=[
  {id:'cat',name:'上门喂猫',category:'home',icon:'cat',caption:'喂食换水 · 猫砂清洁 · 状态照看',price:39,duration:'30 分钟',items:['核对宠物状态与喂食要求','按约定喂食、换水','清洁猫砂与用品','记录宠物状态并检查门窗']},
  {id:'dog',name:'上门照看',category:'home',icon:'dog',caption:'基础照护 · 陪伴互动 · 饮食记录',price:49,duration:'30 分钟',items:['核对宠物及照护要求','按约定喂食、换水','完成基础陪伴照看','检查用品、宠物与门窗']},
@@ -61,7 +82,7 @@ export const requirements=[
  {id:'X05',title:'付款、照片或直播失败',status:'adopted',detail:'先核对支付结果，避免重复付款；影像失败时说明并申请补证或暂停，不假装已有记录。',pages:['customer.bills','customer.progress','worker.incident']},
  {id:'X06',title:'多次订单逐次结算异常',status:'adopted',detail:'已履约、异常及未服务次数分别记录；取消剩余次数由客服核对费用和通知。',pages:['customer.order','hq.support']}
 ];
-const makeOrder=(id,status,patch={})=>({id,customer:'陈女士（演示）',owner:'C01',pet:'团团',petType:'英短 · 2 岁',site:'A',service:'cat',date:'2026-10-23',time:'09:00–09:30',amount:39,worker:null,photoConsent:true,liveConsent:false,entry:'主人交钥匙',keyRequired:true,source:'用户自助',note:'按约定定量喂食，留意饮水。',status,created:'10-22 09:10',report:'',reportStatus:'none',checks:[],keyReturned:false,extra:[],history:[{time:'09:10',text:'客户提交预约申请，等待受理审核'}],...patch});
+const makeOrder=(id,status,patch={})=>({id,customer:'陈女士（演示）',owner:'C01',pet:'团团',petType:'英短 · 2 岁',site:'A',service:'cat',date:'2026-10-23',time:'09:00–09:30',amount:39,worker:null,photoConsent:true,liveConsent:false,entry:'主人交钥匙',keyRequired:true,source:'用户自助',note:'按约定定量喂食，留意饮水。',status,created:'10-22 09:10',report:'',reportStatus:'none',checks:[],keyReturned:false,extra:[],history:[{time:'09:10',text:'客户已提交预约，等待平台核对资料并审核服务安排'}],...patch});
 export function seed(){return {
  orders:[makeOrder('ML102301','pending_review'),makeOrder('ML102302','awaiting_payment',{pet:'可乐',service:'walk',amount:49,time:'10:00–10:30',keyRequired:false,entry:'主人在家'}),makeOrder('ML102303','awaiting_dispatch',{pet:'年糕',time:'11:00–11:30'}),makeOrder('ML102304','assigned',{worker:'W01',time:'14:00–14:30'}),makeOrder('ML102305','in_service',{worker:'W01',time:'15:00–15:30',checks:[],arrived:'15:01'}),makeOrder('ML102306','awaiting_confirmation',{worker:'W01',pet:'可乐',service:'walk',report:'已按约遛行，饮水正常，无异常；牵引装备已收回，门窗核对完毕。',reportStatus:'submitted',keyRequired:false,keyReturned:true,checks:['核对宠物状态与出行授权','检查牵引装备及佩戴','按约定路线遛行并清理','确认宠物归家与门窗安全'],arrived:'08:58',left:'09:31',date:'2026-10-22'}),makeOrder('ML102307','completed',{site:'B',owner:'C02',customer:'李先生（演示）',pet:'麻薯',worker:'W03',report:'喂食换水及猫砂清洁完成，宠物状态良好。',reportStatus:'confirmed',date:'2026-10-22'}),makeOrder('ML102308','pending_review',{site:'B',owner:'C02',customer:'李先生（演示）',pet:'麻薯'})],
  workers:[{id:'W01',name:'阿哲',site:'A',status:'active',skills:['cat','dog','walk','transport'],shift:'09:00–18:00',jobs:3,rating:'4.9'},{id:'W02',name:'小林',site:'A',status:'active',skills:['cat','dog','walk','wash-home'],shift:'09:00–18:00',jobs:1,rating:'4.9'},{id:'W03',name:'小周',site:'B',status:'active',skills:['cat','dog','walk'],shift:'09:00–18:00',jobs:2,rating:'4.8'},{id:'W04',name:'小何',site:'A',status:'training',skills:['cat','dog'],shift:'待排班',jobs:0,rating:'—'}],
@@ -93,22 +114,22 @@ export function act(data,role,type,input={},context={}){
  if(type==='book'){
   need(['customer','station'].includes(role),'当前身份不能创建预约');need(input.pet&&input.date&&input.service,'请补齐宠物、日期和服务');need(services.some(s=>s.id===input.service&&s.category==='home'),'请选择可预约的上门服务；到店项目从专业转介提交');
   need(input.site===(role==='station'?(context.site||'A'):customerFor(context.customer).site),'当前地址不在所属社区服务范围，请登记服务意向');
-  const status=role==='station'?'pending_customer':'pending_review';const n=makeOrder('ML'+id(),status,{owner:input.site==='B'?'C02':'C01',customer:customerFor(input.site==='B'?'C02':'C01').name+'（演示）',pet:input.pet,service:input.service,amount:serviceFor(input.service).price,date:input.date,time:input.time||'09:00–09:30',site:input.site,photoConsent:!!input.photoConsent,liveConsent:!!input.liveConsent,keyRequired:input.entry==='主人交钥匙',entry:input.entry||'主人在家',note:input.note||'',source:role==='station'?'站点辅助预约':'用户自助',repeat:input.repeat||1,history:[{time:now(),text:role==='station'?'接待员代填预约，等待居民本人确认':'客户提交预约，待运营审核'}]});
-  const count=[1,3,7].includes(Number(input.repeat))?Number(input.repeat):1;n.repeat=count;const group=[n];if(count>1){n.series=n.id;n.visit=1;for(let i=1;i<count;i++){const day=new Date(n.date+'T12:00:00Z');day.setUTCDate(day.getUTCDate()+i);group.push(makeOrder(n.id+'-'+(i+1),status,{...n,id:n.id+'-'+(i+1),date:day.toISOString().slice(0,10),visit:i+1,history:[{time:now(),text:'多次预约第 '+(i+1)+' 次申请，独立审核、履约及报告'}],checks:[],extra:[]}));}}data.orders.unshift(...group);log('创建预约 '+n.id+(count>1?'，共 '+count+' 次独立任务':''));return {message:role==='station'?'已生成本人确认单，不能替居民确认授权':'预约已提交，审核通过后再确认费用付款',order:n};
+  const status=role==='station'?'pending_customer':'pending_review';const n=makeOrder('ML'+id(),status,{owner:input.site==='B'?'C02':'C01',customer:customerFor(input.site==='B'?'C02':'C01').name+'（演示）',pet:input.pet,service:input.service,amount:serviceFor(input.service).price,date:input.date,time:input.time||'09:00–09:30',site:input.site,photoConsent:!!input.photoConsent,liveConsent:!!input.liveConsent,keyRequired:input.entry==='主人交钥匙',entry:input.entry||'主人在家',note:input.note||'',source:role==='station'?'站点辅助预约':'用户自助',repeat:input.repeat||1,history:[{time:now(),text:role==='station'?'站点已代填预约，等待客户本人确认预约信息与授权':'客户已提交预约，等待平台核对资料并审核服务安排'}]});
+  const count=[1,3,7].includes(Number(input.repeat))?Number(input.repeat):1;n.repeat=count;const group=[n];if(count>1){n.series=n.id;n.visit=1;for(let i=1;i<count;i++){const day=new Date(n.date+'T12:00:00Z');day.setUTCDate(day.getUTCDate()+i);group.push(makeOrder(n.id+'-'+(i+1),status,{...n,id:n.id+'-'+(i+1),date:day.toISOString().slice(0,10),visit:i+1,history:[{time:now(),text:'多次预约第 '+(i+1)+' 次申请，由平台审核预约、小哥逐次履约并提交服务报告'}],checks:[],extra:[]}));}}data.orders.unshift(...group);log('创建预约 '+n.id+(count>1?'，共 '+count+' 次独立任务':''));return {message:role==='station'?'已生成本人确认单，不能替居民确认授权':'预约已提交，审核通过后再确认费用付款',order:n};
  }
- if(type==='confirm_proxy'){own();need(role==='customer'&&o.status==='pending_customer','当前预约无需此项确认');o.photoConsent=!!input.photoConsent;o.liveConsent=!!input.liveConsent;o.status='pending_review';log('居民本人确认辅助预约，独立选择拍照及直播授权');}
- else if(type==='review'){hq();need(o?.status==='pending_review','仅待审核预约可审核');if(input.decision==='return'){need(input.reason?.trim(),'请填写退回原因');o.status='returned';o.returnReason=input.reason;log('预约退回补充：'+input.reason);}else{o.status='awaiting_payment';log('预约审核通过，通知客户确认演示报价并付款');}}
+ if(type==='confirm_proxy'){own();need(role==='customer'&&o.status==='pending_customer','当前预约无需再次由客户确认代填信息');o.photoConsent=!!input.photoConsent;o.liveConsent=!!input.liveConsent;o.status='pending_review';log('居民本人确认辅助预约，独立选择拍照及直播授权');}
+ else if(type==='review'){hq();need(o?.status==='pending_review','仅已提交且等待平台审核的预约可进行审核');if(input.decision==='return'){need(input.reason?.trim(),'请填写退回原因');o.status='returned';o.returnReason=input.reason;log('预约退回补充：'+input.reason);}else{o.status='awaiting_payment';log('预约审核已通过，等待客户确认演示费用明细并付款');}}
  else if(type==='resubmit'){own();need(role==='customer'&&o.status==='returned','当前订单不在退回补充阶段');need(input.note?.trim(),'请填写补充资料');o.note+='；'+input.note;o.status='pending_review';log('客户补齐资料，重新提交复核');}
- else if(type==='pay'){own();need(role==='customer'&&o.status==='awaiting_payment','请等待审核和费用确认，勿重复付款');o.status='awaiting_dispatch';log('客户确认演示费用，模拟支付成功，待派单');}
- else if(type==='dispatch'){hq();need(o&&['awaiting_dispatch','assigned','accepted'].includes(o.status),'当前状态不可派单或改派');const w=eligibleWorkers(data,o).find(w=>w.id===input.worker);need(w,'请选择同社区、资质通过且具备该项技能的人员');need(input.reason?.trim(),'请记录派单或改派说明');o.worker=w.id;o.status='assigned';o.reassignRequested=false;log('调度指派 '+w.name+'：'+input.reason+'；客户收到人员安排通知');}
- else if(type==='accept'){own();need(role==='worker'&&o.status==='assigned','仅本人待接任务可确认');o.status='accepted';log('工作人员确认接单，待上门');}
+ else if(type==='pay'){own();need(role==='customer'&&o.status==='awaiting_payment','请等待审核和费用确认，勿重复付款');o.status='awaiting_dispatch';log('客户已确认演示费用并模拟付款，等待平台安排服务小哥');}
+ else if(type==='dispatch'){hq();need(o&&['awaiting_dispatch','assigned','accepted'].includes(o.status),'当前状态不可派单或改派');const w=eligibleWorkers(data,o).find(w=>w.id===input.worker);need(w,'请选择同社区、资质通过且具备该项技能的人员');need(input.reason?.trim(),'请记录派单或改派说明');o.worker=w.id;o.status='assigned';o.reassignRequested=false;log('调度指派 '+w.name+'：'+input.reason+'；客户已收到人员安排通知，等待小哥确认接单');}
+ else if(type==='accept'){own();need(role==='worker'&&o.status==='assigned','仅本人待接任务可确认');o.status='accepted';log('小哥已确认接单，等待按预约时间上门提供服务');}
  else if(type==='reject'){own();need(role==='worker'&&o.status==='assigned','仅待接任务可退回');need(input.reason?.trim(),'请填写拒单原因');o.worker=null;o.status='awaiting_dispatch';log('人员退回调度改派：'+input.reason);}
  else if(type==='arrive'){own();need(role==='worker'&&o.status==='accepted','请先确认接单');need(input.contacted&&input.authorized&&input.matched,'请完成到场联系、入户授权及现场资料核对');o.status='in_service';o.arrived=now();log('到场核对及主人入户授权已确认，开始服务');}
  else if(type==='check'){own();need(role==='worker'&&o.status==='in_service','只能在本人进行中的任务填写清单');o.checks=input.checks||[];}
  else if(type==='record_media'){own();need(role==='worker'&&o.status==='in_service','当前任务不可记录');need(o.photoConsent,'主人尚未授权拍照，请先联系确认');o.photoCount=(o.photoCount||0)+1;log('新增演示服务照片，未使用真实相机');}
  else if(type==='authorize'){own();need(role==='customer','只有主人本人可修改影像授权');o.photoConsent=!!input.photo;o.liveConsent=!!input.live;log('主人更新拍照/直播授权');}
- else if(type==='finish'){own();need(role==='worker'&&o.status==='in_service','当前任务不能提交离场报告');need(serviceFor(o.service).items.every(x=>o.checks.includes(x)),'请逐项完成服务清单');need(input.petSafe&&input.doorSafe&&input.notified,'请完成宠物、门窗与通知检查');need(!o.keyRequired||input.keyReturned,'钥匙归还为必需项，未完成不得提交');need(input.report?.trim(),'请填写本次服务报告');o.report=input.report;o.keyReturned=!!input.keyReturned;o.left=now();o.reportStatus='submitted';o.status='awaiting_confirmation';log('服务人员提交本次报告，等待客户确认');}
- else if(type==='confirm_report'){own();need(role==='customer'&&o.status==='awaiting_confirmation','仅待本人确认的报告可结单');o.status='completed';o.reportStatus='confirmed';log('客户确认本次服务完成，进入平台抽查范围');}
+ else if(type==='finish'){own();need(role==='worker'&&o.status==='in_service','当前任务不能提交离场报告');need(serviceFor(o.service).items.every(x=>o.checks.includes(x)),'请逐项完成服务清单');need(input.petSafe&&input.doorSafe&&input.notified,'请完成宠物、门窗与通知检查');need(!o.keyRequired||input.keyReturned,'钥匙归还为必需项，未完成不得提交');need(input.report?.trim(),'请填写本次服务报告');o.report=input.report;o.keyReturned=!!input.keyReturned;o.left=now();o.reportStatus='submitted';o.status='awaiting_confirmation';log('小哥已结束本次服务并提交报告，等待客户核对并确认订单完成');}
+ else if(type==='confirm_report'){own();need(role==='customer'&&o.status==='awaiting_confirmation','仅小哥已提交报告且等待客户本人确认的订单可完成结单');o.status='completed';o.reportStatus='confirmed';log('客户已确认本次订单服务完成，平台可另行抽查服务质量');}
  else if(type==='rate'){own();need(role==='customer'&&o.status==='completed','请先确认服务完成再评价');need(Number(input.rating)>=1&&Number(input.rating)<=5&&input.comment?.trim(),'请选择星级并填写评价');o.review={rating:Number(input.rating),comment:input.comment};log('客户提交本次服务评价 '+input.rating+' 星');}
  else if(type==='spotcheck'){hq();need(o&&o.report,'暂无服务报告可抽查');if(input.decision==='return'){need(input.reason?.trim(),'请填写补交理由');o.reportStatus='returned';o.reportReturn=input.reason;log('平台抽查要求报告补交：'+input.reason);}else{o.reportStatus='checked';log('平台完成报告抽查；客户原确认记录保留');}}
  else if(type==='revise_report'){own();need(role==='worker'&&o.reportStatus==='returned','没有需要补交的报告');need(input.report?.trim(),'请补充报告');o.report+='\n补充：'+input.report;o.reportStatus='resubmitted';log('工作人员补交报告，交回平台复核');}
